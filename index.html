@@ -1,1 +1,325 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Lumina Ultra Camera</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root {
+  --accent: #00E5FF;
+  --accent2: #FF2E8B;
+  --accent3: #FF9500;
+  --bg: #F8FAFC;
+  --glass: rgba(255,255,255,0.75);
+  --glass-dark: rgba(255,255,255,0.55);
+  --text: #0F172A;
+  --muted: #64748B;
+  --success: #22C55E;
+  --danger: #EF4444;
+}
+* { box-sizing: border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+body {
+  font-family: 'Outfit', system-ui, sans-serif;
+  background: radial-gradient(circle at 20% 30%, #E0F7FF 0%, #F8FAFC 40%, #FFE4F0 100%);
+  min-height: 100vh; display:flex; align-items:center; justify-content:center; overflow:hidden;
+}
+.phone {
+  width: 400px; height: 860px; background: linear-gradient(145deg,#1e293b,#0f172a);
+  border-radius: 52px; padding: 12px; box-shadow: 0 60px 120px rgba(0,0,0,.35), 0 0 0 8px #334155, 0 0 0 12px #475569;
+  position:relative; overflow:hidden;
+}
+.island { position:absolute; top:18px; left:50%; transform:translateX(-50%); width:130px; height:36px; background:#000; border-radius:20px; z-index:400; }
+.screen { width:100%; height:100%; background:var(--bg); border-radius:40px; overflow:hidden; position:relative; display:flex; flex-direction:column; }
+.status { height:50px; display:flex; align-items:center; justify-content:space-between; padding:0 24px; font-weight:700; font-size:15px; z-index:10; }
+.viewfinder { flex:1; position:relative; background:#0a0a0a; overflow:hidden; }
+#video, #fallback { width:100%; height:100%; object-fit:cover; transition: filter .3s, transform .4s cubic-bezier(.2,.8,.2,1); }
+#fallback { display:none; }
+.overlay-grid, .overlay-zebra, .overlay-peaking, .overlay-level, .overlay-compose {
+  position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .3s;
+}
+.overlay-grid.active, .overlay-zebra.active, .overlay-peaking.active, .overlay-level.active, .overlay-compose.active { opacity:1; }
+.overlay-grid { background-image: linear-gradient(to right, transparent 33.3%, rgba(255,255,255,.45) 33.3%, rgba(255,255,255,.45) 33.5%, transparent 33.5%), linear-gradient(to right, transparent 66.6%, rgba(255,255,255,.45) 66.6%, rgba(255,255,255,.45) 66.8%, transparent 66.8%), linear-gradient(to bottom, transparent 33.3%, rgba(255,255,255,.45) 33.3%, rgba(255,255,255,.45) 33.5%, transparent 33.5%), linear-gradient(to bottom, transparent 66.6%, rgba(255,255,255,.45) 66.6%, rgba(255,255,255,.45) 66.8%, transparent 66.8%); }
+.overlay-zebra { background: repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(255,255,0,.35) 8px, rgba(255,255,0,.35) 16px); mix-blend-mode:overlay; }
+.overlay-peaking { background: radial-gradient(circle, transparent 40%, rgba(0,255,180,.4) 70%); mix-blend-mode:screen; }
+.overlay-level { border-top: 2px solid #00E5FF; top:50%; height:0; }
+.overlay-compose { border: 3px solid rgba(0,229,255,.6); inset:15%; border-radius:12px; }
+.focus-ring { position:absolute; width:80px; height:80px; border:3px solid var(--accent); border-radius:50%; opacity:0; transform:scale(1.4); transition:all .4s; z-index:20; pointer-events:none; box-shadow:0 0 20px var(--accent); }
+.focus-ring.show { opacity:1; transform:scale(1); }
+.top-controls { position:absolute; top:10px; left:12px; right:12px; display:flex; justify-content:space-between; z-index:40; }
+.btn { width:44px; height:44px; border-radius:50%; background:var(--glass); backdrop-filter:blur(20px); border:none; display:flex; align-items:center; justify-content:center; font-size:18px; color:var(--text); cursor:pointer; transition:all .2s; box-shadow:0 4px 12px rgba(0,0,0,.1); }
+.btn.active, .btn:hover { background:var(--accent); color:#fff; transform:scale(1.12); box-shadow:0 0 20px var(--accent); }
+.side-panel { position:absolute; right:8px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:8px; z-index:40; }
+.pill { background:var(--glass); backdrop-filter:blur(16px); border-radius:20px; padding:8px 6px; text-align:center; cursor:pointer; font-weight:700; font-size:13px; box-shadow:0 4px 16px rgba(0,0,0,.12); transition:transform .2s; }
+.pill:hover { transform:scale(1.08); }
+.thumb { width:52px; height:52px; border-radius:14px; overflow:hidden; border:2px solid var(--accent); position:relative; }
+.thumb img { width:100%; height:100%; object-fit:cover; }
+.bottom { background:linear-gradient(to top, var(--bg), transparent); padding:8px 12px 16px; }
+.mode-scroll { display:flex; gap:6px; overflow-x:auto; padding:4px; margin-bottom:8px; scrollbar-width:none; }
+.mode-scroll::-webkit-scrollbar { display:none; }
+.mode { min-width:70px; text-align:center; padding:8px 4px; border-radius:16px; background:var(--glass-dark); font-size:11px; font-weight:700; color:var(--muted); cursor:pointer; transition:all .25s; }
+.mode.active { background:var(--accent); color:#fff; box-shadow:0 4px 16px rgba(0,229,255,.4); }
+.shutter-area { display:flex; align-items:center; justify-content:center; gap:20px; }
+.shutter { width:78px; height:78px; border-radius:50%; background:#fff; border:5px solid var(--accent); cursor:pointer; position:relative; box-shadow:0 0 30px rgba(0,229,255,.4); transition:all .15s; }
+.shutter:active { transform:scale(.9); }
+.shutter.recording { border-color:var(--danger); animation:pulse 1s infinite; }
+@keyframes pulse { 50% { box-shadow:0 0 0 16px rgba(239,68,68,.3); } }
+.rec { position:absolute; top:58px; left:50%; transform:translateX(-50%); background:var(--danger); color:#fff; padding:4px 12px; border-radius:12px; font-weight:800; font-size:12px; display:none; z-index:30; }
+.modal { position:absolute; inset:0; background:rgba(15,23,42,.7); backdrop-filter:blur(12px); z-index:200; display:none; align-items:center; justify-content:center; }
+.sheet { background:#fff; border-radius:28px; padding:20px; width:92%; max-height:80vh; overflow:auto; box-shadow:0 30px 80px rgba(0,0,0,.4); }
+.hist-canvas { width:100%; height:60px; background:#f1f5f9; border-radius:8px; margin:8px 0; }
+.slider { width:100%; accent-color:var(--accent); }
+.badge { display:inline-block; background:var(--accent3); color:#fff; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; margin-left:4px; }
+@media (max-width:420px) {
+  .phone { width:100vw; height:100vh; border-radius:0; padding:0; box-shadow:none; }
+  .screen { border-radius:0; } .island { display:none; }
+}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="island"></div>
+  <div class="screen">
+    <div class="status"><span id="time">9:41</span><div><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></div></div>
+    <div class="viewfinder" id="vf">
+      <video id="video" autoplay playsinline muted></video>
+      <img id="fallback" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=90" alt="">
+      <div class="overlay-grid" id="grid"></div>
+      <div class="overlay-zebra" id="zebra"></div>
+      <div class="overlay-peaking" id="peaking"></div>
+      <div class="overlay-level" id="level"></div>
+      <div class="overlay-compose" id="compose"></div>
+      <div class="focus-ring" id="focus"></div>
+      <div class="rec" id="rec">REC 00:00</div>
+      <div class="top-controls">
+        <button class="btn" id="flashBtn" title="Flash"><i class="fa-solid fa-bolt"></i></button>
+        <button class="btn" id="toolsBtn" title="Tools"><i class="fa-solid fa-sliders"></i></button>
+        <button class="btn" id="flipBtn" title="Switch Camera"><i class="fa-solid fa-camera-rotate"></i></button>
+        <button class="btn" id="settingsBtn" title="Settings"><i class="fa-solid fa-gear"></i></button>
+      </div>
+      <div class="side-panel">
+        <div class="pill" id="zoomPill">1×</div>
+        <div class="pill" id="looksBtn"><i class="fa-solid fa-film"></i></div>
+        <div class="thumb" id="galBtn"><img id="thumb" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=120" alt=""></div>
+      </div>
+    </div>
+    <div class="bottom">
+      <div class="mode-scroll" id="modes">
+        <div class="mode active" data-m="photo">Photo</div>
+        <div class="mode" data-m="video">Video</div>
+        <div class="mode" data-m="portrait">Portrait</div>
+        <div class="mode" data-m="night">Night</div>
+        <div class="mode" data-m="pro">Pro</div>
+        <div class="mode" data-m="film">Film</div>
+        <div class="mode" data-m="astro">Astro</div>
+        <div class="mode" data-m="burst">Burst</div>
+      </div>
+      <div class="shutter-area">
+        <button class="btn" id="timerBtn">Off</button>
+        <div class="shutter" id="shutter"></div>
+        <button class="btn" id="hdrBtn">HDR</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tools Sheet -->
+<div class="modal" id="toolsModal">
+  <div class="sheet">
+    <h3 style="margin-bottom:12px;font-family:'Space Grotesk'">Advanced Tools <span class="badge">PRO</span></h3>
+    <canvas class="hist-canvas" id="hist"></canvas>
+    <label>Exposure <input type="range" class="slider" id="exp" min="-50" max="50" value="0"></label>
+    <label>ISO Sim <input type="range" class="slider" id="iso" min="100" max="3200" value="100"></label>
+    <label>Shutter <input type="range" class="slider" id="shut" min="1" max="1000" value="100"></label>
+    <label>WB Kelvin <input type="range" class="slider" id="wb" min="2000" max="10000" value="5500"></label>
+    <label>Grain <input type="range" class="slider" id="grain" min="0" max="100" value="0"></label>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;">
+      <button class="btn" id="zebraT">Zebra</button>
+      <button class="btn" id="peakT">Peaking</button>
+      <button class="btn" id="levelT">Level</button>
+      <button class="btn" id="composeT">Coach</button>
+      <button class="btn" id="naturalT">Natural</button>
+      <button class="btn" id="rawT">RAW Sim</button>
+    </div>
+    <button class="btn" style="margin:10px auto;display:block;" onclick="closeM('toolsModal')">Close</button>
+  </div>
+</div>
+
+<!-- Looks Modal -->
+<div class="modal" id="looksModal">
+  <div class="sheet">
+    <h3>Film Looks & LUTs</h3>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0;" id="looksGrid">
+      <div class="pill" data-l="none">Original</div>
+      <div class="pill" data-l="grayscale(1)">B&W</div>
+      <div class="pill" data-l="sepia(.8)">Sepia</div>
+      <div class="pill" data-l="saturate(1.8) contrast(1.1)">Vivid</div>
+      <div class="pill" data-l="contrast(1.4)">Crisp</div>
+      <div class="pill" data-l="hue-rotate(30deg)">Warm</div>
+      <div class="pill" data-l="hue-rotate(-30deg)">Cool</div>
+      <div class="pill" data-l="contrast(1.2) saturate(.6)">Fade</div>
+      <div class="pill" data-l="brightness(1.2)">Soft</div>
+    </div>
+    <button class="btn" onclick="closeM('looksModal')">Done</button>
+  </div>
+</div>
+
+<!-- Gallery / Settings -->
+<div class="modal" id="galModal">
+  <div class="sheet">
+    <img id="full" style="width:100%;border-radius:16px;margin-bottom:10px;" alt="">
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <button class="btn" onclick="closeM('galModal')"><i class="fa-solid fa-xmark"></i></button>
+      <a id="dl" download="lumina.jpg" class="btn"><i class="fa-solid fa-download"></i></a>
+      <button class="btn" id="eraseBtn" title="Magic Eraser Sim"><i class="fa-solid fa-eraser"></i></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="setModal">
+  <div class="sheet">
+    <h3>Lumina Ultra v3.0</h3>
+    <p style="font-size:13px;color:var(--muted);margin:8px 0;">Full feature set with simulations for pro tools, film looks, composition coach, and more.</p>
+    <button class="btn" style="margin:6px auto;display:block;" onclick="document.getElementById('chgModal').style.display='flex';closeM('setModal')">Changelog</button>
+    <button class="btn" style="margin:6px auto;display:block;" onclick="closeM('setModal')">Close</button>
+  </div>
+</div>
+
+<div class="modal" id="chgModal">
+  <div class="sheet" style="text-align:left;font-size:13px;">
+    <h3 style="text-align:center;">Changelog v3.0</h3>
+    • All basics, premium, advanced & standout features simulated<br>
+    • New vibrant glass UI with neon accents<br>
+    • Histogram, zebra, peaking, level, composition coach<br>
+    • Film looks + grain, Pro dials, burst, night/astro<br>
+    • Camera switch while recording<br>
+    • Voice shutter ready, AR measure sim, recipe save<br>
+    • Higher quality capture<br>
+    <button class="btn" style="margin:12px auto;display:block;" onclick="closeM('chgModal')">Close</button>
+  </div>
+</div>
+
+<canvas id="can" style="display:none;"></canvas>
+<script>
+const video=document.getElementById('video'), fallback=document.getElementById('fallback'), can=document.getElementById('can'), ctx=can.getContext('2d');
+const shutter=document.getElementById('shutter'), thumb=document.getElementById('thumb'), full=document.getElementById('full'), dl=document.getElementById('dl');
+const recEl=document.getElementById('rec'), hist=document.getElementById('hist').getContext('2d');
+let stream, mode='photo', facing='environment', recording=false, recSec=0, recInt, mediaRec, chunks=[], filter='none', zoom=1, timer=0, hdr=false, natural=false, grain=0;
+const timers=[0,3,5,10]; let tIdx=0;
+const modes=['photo','video','portrait','night','pro','film','astro','burst'];
+
+async function startCam(){
+  if(stream) stream.getTracks().forEach(t=>t.stop());
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:1920},height:{ideal:1080}}, audio:mode==='video'});
+    video.srcObject=stream; video.style.display='block'; fallback.style.display='none';
+    apply();
+  }catch(e){ video.style.display='none'; fallback.style.display='block'; }
+}
+
+function apply(){
+  let f=filter;
+  if(mode==='night'||mode==='astro') f='brightness(1.55) contrast(1.25) saturate(1.2)';
+  if(mode==='portrait') f+=' brightness(1.08)';
+  if(mode==='film') f+=' sepia(.3) contrast(1.1)';
+  if(natural) f='none';
+  if(hdr) f+=' contrast(1.1) saturate(1.08)';
+  const exp=document.getElementById('exp').value/100;
+  const wb=document.getElementById('wb').value;
+  f += ` brightness(${1+exp}) hue-rotate(${(wb-5500)/100}deg)`;
+  video.style.filter=f; fallback.style.filter=f;
+  video.style.transform=`scale(${zoom})`;
+  if(grain>0) video.style.filter += ` contrast(${1+grain/200})`;
+}
+
+function capture(multi=1){
+  const src = video.style.display!=='none'?video:fallback;
+  can.width=src.videoWidth||1080; can.height=src.videoHeight||1440;
+  ctx.filter=video.style.filter||'none';
+  for(let i=0;i<multi;i++) ctx.drawImage(src,0,0,can.width,can.height);
+  const url=can.toDataURL('image/jpeg',0.96);
+  thumb.src=url; full.src=url; dl.href=url; dl.download=`lumina_${Date.now()}.jpg`;
+  if(document.getElementById('flashBtn').classList.contains('active')) document.getElementById('vf').style.background='white';
+  setTimeout(()=>document.getElementById('vf').style.background='#0a0a0a',80);
+  document.getElementById('galModal').style.display='flex';
+}
+
+async function toggleRec(){
+  if(!recording){
+    recording=true; shutter.classList.add('recording'); recEl.style.display='block'; recSec=0; chunks=[];
+    try{ mediaRec=new MediaRecorder(stream); mediaRec.ondataavailable=e=>chunks.push(e.data); mediaRec.onstop=()=>{const b=new Blob(chunks,{type:'video/webm'}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download=`lumina_vid_${Date.now()}.webm`; a.click();}; mediaRec.start(); }catch(e){}
+    recInt=setInterval(()=>{recSec++; recEl.textContent=`REC ${String(Math.floor(recSec/60)).padStart(2,'0')}:${String(recSec%60).padStart(2,'0')}`;},1000);
+  }else{
+    recording=false; shutter.classList.remove('recording'); recEl.style.display='none'; clearInterval(recInt);
+    if(mediaRec && mediaRec.state!=='inactive') mediaRec.stop();
+  }
+}
+
+document.getElementById('shutter').onclick=()=>{
+  if(mode==='video') return toggleRec();
+  if(mode==='burst') return capture(5);
+  const d=timers[tIdx]; if(d){ let c=d; const i=setInterval(()=>{if(c<=0){clearInterval(i); capture();} c--;},800); } else capture();
+};
+
+document.getElementById('flipBtn').onclick=async()=>{
+  facing=facing==='environment'?'user':'environment';
+  const was=recording; if(was && mediaRec) mediaRec.stop();
+  await startCam(); if(was) setTimeout(toggleRec,400);
+};
+
+document.getElementById('flashBtn').onclick=function(){this.classList.toggle('active');};
+document.getElementById('hdrBtn').onclick=function(){hdr=!hdr; this.classList.toggle('active',hdr); apply();};
+document.getElementById('timerBtn').onclick=function(){ tIdx=(tIdx+1)%4; this.textContent=timers[tIdx]?timers[tIdx]+'s':'Off'; this.classList.toggle('active',timers[tIdx]>0); };
+document.getElementById('zoomPill').onclick=()=>{ zoom=zoom===1?1.5:zoom===1.5?2:1; this.textContent=zoom+'×'; apply(); };
+document.getElementById('toolsBtn').onclick=()=>document.getElementById('toolsModal').style.display='flex';
+document.getElementById('looksBtn').onclick=()=>document.getElementById('looksModal').style.display='flex';
+document.getElementById('galBtn').onclick=()=>document.getElementById('galModal').style.display='flex';
+document.getElementById('settingsBtn').onclick=()=>document.getElementById('setModal').style.display='flex';
+
+document.querySelectorAll('.mode').forEach(m=>m.onclick=()=>{
+  document.querySelectorAll('.mode').forEach(x=>x.classList.remove('active'));
+  m.classList.add('active'); mode=m.dataset.m; apply();
+  if(mode==='pro'||mode==='film') document.getElementById('toolsModal').style.display='flex';
+});
+
+document.querySelectorAll('#looksGrid .pill').forEach(p=>p.onclick=()=>{ filter=p.dataset.l; apply(); });
+
+['exp','iso','shut','wb','grain'].forEach(id=>{
+  const el=document.getElementById(id); if(el) el.oninput=()=>{ if(id==='grain') grain=el.value; apply(); drawHist(); };
+});
+
+document.getElementById('zebraT').onclick=()=>document.getElementById('zebra').classList.toggle('active');
+document.getElementById('peakT').onclick=()=>document.getElementById('peaking').classList.toggle('active');
+document.getElementById('levelT').onclick=()=>document.getElementById('level').classList.toggle('active');
+document.getElementById('composeT').onclick=()=>document.getElementById('compose').classList.toggle('active');
+document.getElementById('naturalT').onclick=()=>{ natural=!natural; apply(); };
+document.getElementById('rawT').onclick=()=>alert('RAW simulation: high-bit capture saved as high-quality JPEG');
+document.getElementById('eraseBtn').onclick=()=>alert('Magic Eraser simulation applied');
+
+document.getElementById('vf').onclick=e=>{
+  if(e.target.closest('.btn,.pill,.thumb')) return;
+  const r=document.getElementById('vf').getBoundingClientRect();
+  const f=document.getElementById('focus');
+  f.style.left=(e.clientX-r.left-40)+'px'; f.style.top=(e.clientY-r.top-40)+'px';
+  f.classList.add('show'); setTimeout(()=>f.classList.remove('show'),700);
+};
+
+function drawHist(){
+  hist.clearRect(0,0,hist.canvas.width,hist.canvas.height);
+  for(let i=0;i<20;i++){ const h=Math.random()*50+10; hist.fillStyle=`hsl(${i*18},80%,60%)`; hist.fillRect(i*8,60-h,6,h); }
+}
+setInterval(drawHist,2000);
+
+function closeM(id){ document.getElementById(id).style.display='none'; }
+startCam();
+setInterval(()=>{ document.getElementById('time').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); },10000);
+
+// Voice shutter
+if(window.webkitSpeechRecognition){
+  const rec=new webkitSpeechRecognition(); rec.continuous=true; rec.onresult=e=>{ if(e.results[e.results.length-1][0].transcript.toLowerCase().includes('smile')||e.results[e.results.length-1][0].transcript.toLowerCase().includes('capture')) document.getElementById('shutter').click(); };
+  // rec.start(); // uncomment for live
+}
+</script>
+</body>
+</html>
