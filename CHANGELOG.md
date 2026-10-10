@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.2 — October 9, 2026
+- Added grid overlay (rule of thirds)
+- Added tap-to-focus ring animation
+- Added Pro mode with Exposure, Contrast, Saturation, and Warmth sliders
+- Added camera flip (front/back)
+- Expanded filters to 9 options
+- Added video recording simulation with REC timer
+- Added shutter sound
+- Multi-timer options (Off / 3s / 5s / 10s)
+- Improved animations and micro-interactions
+
 ## v1.1 — October 9, 2026
 - Added in-app Changelog (accessible from Settings)
 - Added Screenshots gallery page link
