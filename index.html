@@ -14,278 +14,92 @@
   --panel: #F5F5F7;
   --text: #1D1D1F;
   --muted: #86868B;
-  --radius: 24px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   background: linear-gradient(135deg, #E8F0FE 0%, #F5F7FA 50%, #FFF5F0 100%);
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
 }
 .phone {
-  width: 390px;
-  height: 844px;
-  background: #000;
-  border-radius: 54px;
-  padding: 12px;
-  box-shadow: 0 40px 80px rgba(0,0,0,0.25), 0 0 0 8px #1a1a1a, 0 0 0 10px #333;
-  position: relative;
-  overflow: hidden;
+  width: 390px; height: 844px; background: #000; border-radius: 54px; padding: 12px;
+  box-shadow: 0 40px 80px rgba(0,0,0,.25), 0 0 0 8px #1a1a1a, 0 0 0 10px #333;
+  position: relative; overflow: hidden;
 }
 .dynamic-island {
-  position: absolute;
-  top: 18px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 126px;
-  height: 37px;
-  background: #000;
-  border-radius: 20px;
-  z-index: 100;
+  position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+  width: 126px; height: 37px; background: #000; border-radius: 20px; z-index: 200;
 }
-.screen {
-  width: 100%;
-  height: 100%;
-  background: var(--bg);
-  border-radius: 42px;
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-.status-bar {
-  height: 54px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 28px 0 24px;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text);
-  z-index: 10;
-}
-.viewfinder {
-  flex: 1;
-  position: relative;
-  background: #111;
-  overflow: hidden;
-}
-#video, #fallback {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
+.screen { width: 100%; height: 100%; background: var(--bg); border-radius: 42px; overflow: hidden; position: relative; display: flex; flex-direction: column; }
+.status-bar { height: 54px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px 0 24px; font-size: 16px; font-weight: 600; z-index: 10; }
+.viewfinder { flex: 1; position: relative; background: #111; overflow: hidden; }
+#video, #fallback { width: 100%; height: 100%; object-fit: cover; display: block; transition: filter .3s, transform .3s; }
 #fallback { display: none; }
-.controls-top {
-  position: absolute;
-  top: 12px;
-  left: 16px;
-  right: 16px;
-  display: flex;
-  justify-content: space-between;
-  z-index: 20;
+.grid-overlay {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s;
+  background: linear-gradient(to right, transparent 33.33%, rgba(255,255,255,.35) 33.33%, rgba(255,255,255,.35) 33.5%, transparent 33.5%),
+              linear-gradient(to right, transparent 66.66%, rgba(255,255,255,.35) 66.66%, rgba(255,255,255,.35) 66.83%, transparent 66.83%),
+              linear-gradient(to bottom, transparent 33.33%, rgba(255,255,255,.35) 33.33%, rgba(255,255,255,.35) 33.5%, transparent 33.5%),
+              linear-gradient(to bottom, transparent 66.66%, rgba(255,255,255,.35) 66.66%, rgba(255,255,255,.35) 66.83%, transparent 66.83%);
 }
+.grid-overlay.active { opacity: 1; }
+.focus-ring {
+  position: absolute; width: 80px; height: 80px; border: 2px solid #FFD60A; border-radius: 50%;
+  pointer-events: none; opacity: 0; transform: scale(1.4); transition: all .4s cubic-bezier(.2,.8,.2,1); z-index: 15;
+}
+.focus-ring.show { opacity: 1; transform: scale(1); }
+.controls-top { position: absolute; top: 12px; left: 16px; right: 16px; display: flex; justify-content: space-between; z-index: 20; }
 .btn-circle {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.92);
-  backdrop-filter: blur(12px);
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  color: var(--text);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.92); backdrop-filter: blur(12px);
+  border: none; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--text);
+  cursor: pointer; transition: all .2s; box-shadow: 0 2px 8px rgba(0,0,0,.08);
 }
-.btn-circle:hover, .btn-circle.active {
-  background: var(--accent);
-  color: white;
-  transform: scale(1.05);
-}
-.aspect { background: rgba(255,255,255,0.92); border-radius: 20px; padding: 8px 14px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-.side-controls {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  z-index: 20;
-}
+.btn-circle:hover, .btn-circle.active { background: var(--accent); color: #fff; transform: scale(1.08); }
+.aspect { background: rgba(255,255,255,.92); border-radius: 20px; padding: 8px 14px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.side-controls { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 12px; z-index: 20; }
 .zoom-btn, .filter-btn, .gallery-thumb {
-  background: rgba(255,255,255,0.94);
-  backdrop-filter: blur(16px);
-  border-radius: 22px;
-  padding: 10px 8px;
-  text-align: center;
-  cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-  transition: all 0.2s;
+  background: rgba(255,255,255,.94); backdrop-filter: blur(16px); border-radius: 22px; padding: 10px 8px;
+  text-align: center; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,.1); transition: all .2s;
 }
-.zoom-btn:hover, .filter-btn:hover { transform: scale(1.04); }
-.gallery-thumb {
-  width: 58px;
-  height: 58px;
-  padding: 4px;
-  border-radius: 16px;
-  overflow: hidden;
-  position: relative;
-}
+.zoom-btn:hover, .filter-btn:hover { transform: scale(1.05); }
+.gallery-thumb { width: 58px; height: 58px; padding: 4px; border-radius: 16px; overflow: hidden; position: relative; }
 .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
 .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--coral); position: absolute; bottom: 6px; right: 6px; }
-.bottom-panel {
-  background: var(--bg);
-  padding: 16px 20px 28px;
-  border-top: 1px solid #eee;
-}
-.shutter-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 18px;
-}
+.bottom-panel { background: var(--bg); padding: 16px 20px 28px; border-top: 1px solid #eee; }
+.shutter-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
 .shutter {
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
-  background: white;
-  border: 5px solid var(--accent);
-  cursor: pointer;
-  position: relative;
-  box-shadow: 0 4px 20px rgba(0,122,255,0.25);
-  transition: all 0.15s;
+  width: 76px; height: 76px; border-radius: 50%; background: white; border: 5px solid var(--accent);
+  cursor: pointer; position: relative; box-shadow: 0 4px 20px rgba(0,122,255,.25); transition: all .15s;
 }
-.shutter:active { transform: scale(0.94); }
-.shutter::after {
-  content: '';
-  position: absolute;
-  inset: 6px;
-  background: white;
-  border-radius: 50%;
-  border: 2px solid #e0e0e0;
-}
+.shutter:active { transform: scale(.92); }
+.shutter::after { content: ''; position: absolute; inset: 6px; background: white; border-radius: 50%; border: 2px solid #e0e0e0; }
+.shutter.recording { border-color: var(--coral); animation: pulse 1.2s infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 12px rgba(255,59,48,.25); } }
 .timer-btn, .hdr-btn {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: #FFF5F5;
-  border: none;
-  color: var(--coral);
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
+  width: 52px; height: 52px; border-radius: 50%; background: #FFF5F5; border: none; color: var(--coral);
+  font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s;
 }
 .timer-btn.active, .hdr-btn.active { background: var(--coral); color: white; }
-.modes {
-  display: flex;
-  background: var(--panel);
-  border-radius: 28px;
-  padding: 6px;
-  gap: 4px;
-}
-.mode {
-  flex: 1;
-  text-align: center;
-  padding: 10px 0;
-  border-radius: 22px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--muted);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.mode.active {
-  background: white;
-  color: var(--accent);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-.mode.active::after {
-  content: '';
-  display: block;
-  width: 6px;
-  height: 6px;
-  background: var(--accent);
-  border-radius: 50%;
-  margin: 4px auto 0;
-}
-.flash-overlay {
-  position: absolute;
-  inset: 0;
-  background: white;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 30;
-  transition: opacity 0.1s;
-}
-.countdown {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 120px;
-  font-weight: 700;
-  color: white;
-  text-shadow: 0 4px 20px rgba(0,0,0,0.5);
-  z-index: 25;
-  pointer-events: none;
-  opacity: 0;
-}
-.gallery-modal, .settings-modal, .filters-modal {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 50;
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-.modal-content {
-  background: white;
-  border-radius: 24px;
-  padding: 24px;
-  max-width: 320px;
-  width: 90%;
-  text-align: center;
-}
-.filter-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-top: 16px;
-}
-.filter-item {
-  padding: 12px 8px;
-  border-radius: 16px;
-  background: var(--panel);
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 500;
-}
+.modes { display: flex; background: var(--panel); border-radius: 28px; padding: 6px; gap: 4px; }
+.mode { flex: 1; text-align: center; padding: 10px 0; border-radius: 22px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .2s; }
+.mode.active { background: white; color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.mode.active::after { content: ''; display: block; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; margin: 4px auto 0; }
+.flash-overlay { position: absolute; inset: 0; background: white; opacity: 0; pointer-events: none; z-index: 30; transition: opacity .08s; }
+.countdown { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 120px; font-weight: 700; color: white; text-shadow: 0 4px 20px rgba(0,0,0,.5); z-index: 25; pointer-events: none; opacity: 0; }
+.gallery-modal, .settings-modal, .filters-modal, .pro-modal { position: absolute; inset: 0; background: rgba(0,0,0,.6); z-index: 50; display: none; align-items: center; justify-content: center; }
+.modal-content { background: white; border-radius: 24px; padding: 24px; max-width: 340px; width: 92%; text-align: center; max-height: 80vh; overflow: auto; }
+.filter-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 16px; }
+.filter-item { padding: 12px 6px; border-radius: 16px; background: var(--panel); cursor: pointer; font-size: 12px; font-weight: 500; }
 .filter-item.active { background: var(--accent); color: white; }
-.captured-photo {
-  width: 100%;
-  border-radius: 16px;
-  margin-bottom: 16px;
-}
+.slider-row { display: flex; align-items: center; gap: 10px; margin: 10px 0; font-size: 13px; }
+.slider-row input[type=range] { flex: 1; accent-color: var(--accent); }
+.rec-timer { position: absolute; top: 70px; left: 50%; transform: translateX(-50%); background: rgba(255,59,48,.9); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 14px; display: none; z-index: 25; }
 @media (max-width: 420px) {
   .phone { width: 100vw; height: 100vh; border-radius: 0; padding: 0; box-shadow: none; }
-  .screen { border-radius: 0; }
-  .dynamic-island { display: none; }
+  .screen { border-radius: 0; } .dynamic-island { display: none; }
 }
 </style>
 </head>
@@ -295,21 +109,21 @@ body {
   <div class="screen">
     <div class="status-bar">
       <span>9:41</span>
-      <div style="display:flex;gap:6px;font-size:14px;">
-        <i class="fa-solid fa-signal"></i>
-        <i class="fa-solid fa-wifi"></i>
-        <i class="fa-solid fa-battery-full"></i>
-      </div>
+      <div style="display:flex;gap:6px;font-size:14px;"><i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-full"></i></div>
     </div>
-    <div class="viewfinder">
+    <div class="viewfinder" id="viewfinder">
       <video id="video" autoplay playsinline muted></video>
-      <img id="fallback" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80" alt="Mountain view">
+      <img id="fallback" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80" alt="fallback">
+      <div class="grid-overlay" id="grid"></div>
+      <div class="focus-ring" id="focusRing"></div>
       <div class="flash-overlay" id="flash"></div>
       <div class="countdown" id="countdown"></div>
+      <div class="rec-timer" id="recTimer">REC 00:00</div>
       <div class="controls-top">
         <button class="btn-circle" id="flashBtn" title="Flash"><i class="fa-solid fa-bolt"></i></button>
-        <button class="btn-circle" id="timerBtn" title="Timer"><i class="fa-solid fa-clock"></i></button>
+        <button class="btn-circle" id="gridBtn" title="Grid"><i class="fa-solid fa-border-all"></i></button>
         <div class="aspect" id="aspectBtn"><i class="fa-solid fa-expand"></i> 16:9</div>
+        <button class="btn-circle" id="flipBtn" title="Flip Camera"><i class="fa-solid fa-camera-rotate"></i></button>
         <button class="btn-circle" id="settingsBtn" title="Settings"><i class="fa-solid fa-gear"></i></button>
       </div>
       <div class="side-controls">
@@ -318,19 +132,13 @@ body {
           <div style="font-size:11px;color:#666;">WIDE</div>
           <div style="width:6px;height:6px;background:#007AFF;border-radius:50%;margin:4px auto 0;"></div>
         </div>
-        <div class="filter-btn" id="filtersBtn">
-          <i class="fa-solid fa-magic" style="font-size:18px;margin-bottom:4px;"></i>
-          <div style="font-size:11px;">Filters</div>
-        </div>
-        <div class="gallery-thumb" id="galleryBtn">
-          <img id="thumb" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=120&q=80" alt="Last photo">
-          <div class="dot"></div>
-        </div>
+        <div class="filter-btn" id="filtersBtn"><i class="fa-solid fa-magic" style="font-size:18px;margin-bottom:4px;"></i><div style="font-size:11px;">Filters</div></div>
+        <div class="gallery-thumb" id="galleryBtn"><img id="thumb" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=120&q=80" alt="thumb"><div class="dot"></div></div>
       </div>
     </div>
     <div class="bottom-panel">
       <div class="shutter-row">
-        <button class="timer-btn" id="timer3s">3s</button>
+        <button class="timer-btn" id="timerBtn">3s</button>
         <button class="shutter" id="shutter"></button>
         <button class="hdr-btn" id="hdrBtn">HDR</button>
       </div>
@@ -345,58 +153,76 @@ body {
   </div>
 </div>
 
-<!-- Modals -->
 <div class="gallery-modal" id="galleryModal">
   <div class="modal-content">
-    <img id="fullPhoto" class="captured-photo" alt="Captured">
-    <button class="btn-circle" style="margin:0 auto;" onclick="closeModal('galleryModal')">Close</button>
-    <a id="downloadLink" download="lumina-photo.jpg" style="display:block;margin-top:12px;color:#007AFF;font-weight:600;">Download Photo</a>
+    <img id="fullPhoto" class="captured-photo" style="width:100%;border-radius:16px;margin-bottom:12px;" alt="photo">
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:12px;">
+      <button class="btn-circle" onclick="closeModal('galleryModal')"><i class="fa-solid fa-xmark"></i></button>
+      <a id="downloadLink" download="lumina.jpg" class="btn-circle" style="text-decoration:none;"><i class="fa-solid fa-download"></i></a>
+    </div>
   </div>
 </div>
+
 <div class="filters-modal" id="filtersModal">
   <div class="modal-content">
-    <h3 style="margin-bottom:8px;">Filters</h3>
+    <h3>Filters</h3>
     <div class="filter-grid">
       <div class="filter-item active" data-filter="none">Original</div>
       <div class="filter-item" data-filter="grayscale(1)">B&W</div>
-      <div class="filter-item" data-filter="sepia(0.7)">Sepia</div>
-      <div class="filter-item" data-filter="saturate(1.6)">Vivid</div>
-      <div class="filter-item" data-filter="contrast(1.3) brightness(1.1)">Crisp</div>
-      <div class="filter-item" data-filter="hue-rotate(30deg)">Warm</div>
+      <div class="filter-item" data-filter="sepia(0.8)">Sepia</div>
+      <div class="filter-item" data-filter="saturate(1.8)">Vivid</div>
+      <div class="filter-item" data-filter="contrast(1.4) brightness(1.05)">Crisp</div>
+      <div class="filter-item" data-filter="hue-rotate(40deg) saturate(1.2)">Warm</div>
+      <div class="filter-item" data-filter="hue-rotate(-30deg)">Cool</div>
+      <div class="filter-item" data-filter="contrast(1.2) saturate(0.7)">Fade</div>
+      <div class="filter-item" data-filter="brightness(1.2) contrast(0.9)">Soft</div>
     </div>
-    <button class="btn-circle" style="margin:16px auto 0;" onclick="closeModal('filtersModal')">Done</button>
+    <button class="btn-circle" style="margin:16px auto 0;display:block;" onclick="closeModal('filtersModal')">Done</button>
   </div>
 </div>
+
+<div class="pro-modal" id="proModal">
+  <div class="modal-content">
+    <h3>Pro Controls</h3>
+    <div class="slider-row"><span>Exposure</span><input type="range" id="exposure" min="-50" max="50" value="0"></div>
+    <div class="slider-row"><span>Contrast</span><input type="range" id="contrast" min="50" max="200" value="100"></div>
+    <div class="slider-row"><span>Saturation</span><input type="range" id="saturation" min="0" max="200" value="100"></div>
+    <div class="slider-row"><span>Warmth</span><input type="range" id="warmth" min="-50" max="50" value="0"></div>
+    <button class="btn-circle" style="margin:16px auto 0;display:block;" onclick="closeModal('proModal')">Done</button>
+  </div>
+</div>
+
 <div class="settings-modal" id="settingsModal">
   <div class="modal-content">
     <h3>Settings</h3>
-    <p style="margin:12px 0;color:#666;font-size:14px;">Lumina Camera • Premium Light UI</p>
-    <button class="btn-circle" style="margin:8px auto;display:block;" onclick="document.getElementById('changelogModal').style.display='flex';closeModal('settingsModal')">View Changelog</button>
-    <a href="screenshots.html" target="_blank" style="display:block;margin:8px 0;color:#007AFF;font-weight:600;">View Screenshots</a>
-    <button class="btn-circle" style="margin:0 auto;" onclick="closeModal('settingsModal')">Close</button>
+    <p style="margin:8px 0;color:#666;font-size:14px;">Lumina Camera v1.2</p>
+    <button class="btn-circle" style="margin:6px auto;display:block;" onclick="document.getElementById('changelogModal').style.display='flex';closeModal('settingsModal')">Changelog</button>
+    <button class="btn-circle" style="margin:6px auto;display:block;" onclick="closeModal('settingsModal')">Close</button>
   </div>
 </div>
+
 <div class="gallery-modal" id="changelogModal">
-  <div class="modal-content" style="text-align:left;max-height:70vh;overflow:auto;">
+  <div class="modal-content" style="text-align:left;">
     <h3 style="text-align:center;">Changelog</h3>
-    <div style="margin-top:16px;font-size:13px;line-height:1.5;">
+    <div style="margin-top:12px;font-size:13px;line-height:1.6;">
+      <strong>v1.2 — Oct 9, 2026</strong><br>
+      • Grid overlay (rule of thirds)<br>
+      • Tap-to-focus ring<br>
+      • Pro mode sliders (exposure, contrast, saturation, warmth)<br>
+      • Camera flip (front/back)<br>
+      • More filters + video recording simulation<br>
+      • Shutter sound + improved animations<br>
+      • Multi-timer options<br><br>
       <strong>v1.1 — Oct 9, 2026</strong><br>
-      • Added in-app Changelog<br>
-      • Added Screenshots gallery page<br>
-      • Improved settings modal<br><br>
+      • In-app Changelog + Screenshots link<br><br>
       <strong>v1.0 — Oct 9, 2026</strong><br>
-      • Initial release<br>
-      • Real camera + fallback<br>
-      • Full controls: modes, timer, flash, HDR, zoom, filters<br>
-      • Phone simulator frame<br>
-      • Photo capture & download
+      • Initial release with real camera, modes, filters, capture
     </div>
     <button class="btn-circle" style="margin:16px auto 0;display:block;" onclick="closeModal('changelogModal')">Close</button>
   </div>
 </div>
 
 <canvas id="canvas" style="display:none;"></canvas>
-
 <script>
 const video = document.getElementById('video');
 const fallback = document.getElementById('fallback');
@@ -408,92 +234,119 @@ const fullPhoto = document.getElementById('fullPhoto');
 const downloadLink = document.getElementById('downloadLink');
 const flashOverlay = document.getElementById('flash');
 const countdownEl = document.getElementById('countdown');
+const viewfinder = document.getElementById('viewfinder');
+const focusRing = document.getElementById('focusRing');
+const recTimer = document.getElementById('recTimer');
 
-let stream = null;
-let currentFilter = 'none';
-let timerOn = false;
-let flashOn = false;
-let hdrOn = false;
-let zoomLevel = 1;
-let currentMode = 'photo';
+let stream = null, currentFilter = 'none', timerMode = 0, flashOn = false, hdrOn = false;
+let zoomLevel = 1, currentMode = 'photo', facing = 'environment', isRecording = false, recSeconds = 0, recInterval = null;
+const timers = [0, 3, 5, 10];
 
 async function startCamera() {
+  if (stream) stream.getTracks().forEach(t => t.stop());
   try {
     stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
+      video: { facingMode: facing, width: { ideal: 1920 }, height: { ideal: 1080 } },
       audio: false
     });
     video.srcObject = stream;
-    video.style.filter = currentFilter;
-  } catch (err) {
-    console.warn('Camera denied or unavailable, using fallback');
+    video.style.display = 'block';
+    fallback.style.display = 'none';
+    applyFilters();
+  } catch (e) {
     video.style.display = 'none';
     fallback.style.display = 'block';
   }
 }
 
-function takePhoto() {
-  if (timerOn) {
-    runCountdown(() => capture());
-  } else {
-    capture();
+function applyFilters() {
+  let f = currentFilter;
+  if (currentMode === 'night') f = 'brightness(1.45) contrast(1.15) saturate(1.1)';
+  if (currentMode === 'portrait') f = (f === 'none' ? '' : f + ' ') + 'blur(0.5px) brightness(1.05)';
+  const exp = (document.getElementById('exposure')?.value || 0) / 100;
+  const con = (document.getElementById('contrast')?.value || 100) / 100;
+  const sat = (document.getElementById('saturation')?.value || 100) / 100;
+  const warm = (document.getElementById('warmth')?.value || 0);
+  if (currentMode === 'pro' || true) {
+    f += ` brightness(${1 + exp}) contrast(${con}) saturate(${sat}) hue-rotate(${warm}deg)`;
   }
+  video.style.filter = f;
+  fallback.style.filter = f;
 }
 
-function runCountdown(cb) {
-  let count = 3;
+function playShutterSound() {
+  const ac = new (window.AudioContext || window.webkitAudioContext)();
+  const o = ac.createOscillator();
+  const g = ac.createGain();
+  o.connect(g); g.connect(ac.destination);
+  o.frequency.value = 800; g.gain.value = 0.08;
+  o.start(); o.stop(ac.currentTime + 0.06);
+}
+
+function takePhoto() {
+  if (currentMode === 'video') { toggleRecording(); return; }
+  const delay = timers[timerMode];
+  if (delay > 0) runCountdown(delay, capture);
+  else capture();
+}
+
+function runCountdown(sec, cb) {
+  let c = sec;
   countdownEl.style.opacity = 1;
-  const interval = setInterval(() => {
-    countdownEl.textContent = count;
-    if (count <= 0) {
-      clearInterval(interval);
-      countdownEl.style.opacity = 0;
-      countdownEl.textContent = '';
-      cb();
-    }
-    count--;
-  }, 800);
+  const i = setInterval(() => {
+    countdownEl.textContent = c;
+    if (c <= 0) { clearInterval(i); countdownEl.style.opacity = 0; countdownEl.textContent = ''; cb(); }
+    c--;
+  }, 900);
 }
 
 function capture() {
   const source = video.style.display !== 'none' ? video : fallback;
   canvas.width = source.videoWidth || source.naturalWidth || 1080;
   canvas.height = source.videoHeight || source.naturalHeight || 1920;
-  ctx.filter = currentFilter;
-  if (hdrOn) ctx.filter += ' contrast(1.15) saturate(1.2)';
+  ctx.filter = video.style.filter || 'none';
   ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
   const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
   thumb.src = dataUrl;
   fullPhoto.src = dataUrl;
   downloadLink.href = dataUrl;
-  flashEffect();
+  if (flashOn) { flashOverlay.style.opacity = 1; setTimeout(() => flashOverlay.style.opacity = 0, 100); }
+  playShutterSound();
 }
 
-function flashEffect() {
-  if (flashOn) {
-    flashOverlay.style.opacity = 1;
-    setTimeout(() => flashOverlay.style.opacity = 0, 120);
+function toggleRecording() {
+  isRecording = !isRecording;
+  shutter.classList.toggle('recording', isRecording);
+  recTimer.style.display = isRecording ? 'block' : 'none';
+  if (isRecording) {
+    recSeconds = 0;
+    recInterval = setInterval(() => {
+      recSeconds++;
+      const m = String(Math.floor(recSeconds / 60)).padStart(2,'0');
+      const s = String(recSeconds % 60).padStart(2,'0');
+      recTimer.textContent = `REC ${m}:${s}`;
+    }, 1000);
+  } else {
+    clearInterval(recInterval);
+    playShutterSound();
   }
 }
 
-document.getElementById('flashBtn').onclick = () => {
-  flashOn = !flashOn;
-  document.getElementById('flashBtn').classList.toggle('active', flashOn);
-};
+// Events
+document.getElementById('flashBtn').onclick = () => { flashOn = !flashOn; document.getElementById('flashBtn').classList.toggle('active', flashOn); };
+document.getElementById('gridBtn').onclick = () => { document.getElementById('grid').classList.toggle('active'); document.getElementById('gridBtn').classList.toggle('active'); };
+document.getElementById('flipBtn').onclick = () => { facing = facing === 'environment' ? 'user' : 'environment'; startCamera(); };
 document.getElementById('timerBtn').onclick = () => {
-  timerOn = !timerOn;
-  document.getElementById('timerBtn').classList.toggle('active', timerOn);
-  document.getElementById('timer3s').classList.toggle('active', timerOn);
+  timerMode = (timerMode + 1) % timers.length;
+  const t = timers[timerMode];
+  document.getElementById('timerBtn').textContent = t === 0 ? 'Off' : t + 's';
+  document.getElementById('timerBtn').classList.toggle('active', t > 0);
 };
-document.getElementById('timer3s').onclick = () => document.getElementById('timerBtn').click();
-document.getElementById('hdrBtn').onclick = () => {
-  hdrOn = !hdrOn;
-  document.getElementById('hdrBtn').classList.toggle('active', hdrOn);
-};
+document.getElementById('hdrBtn').onclick = () => { hdrOn = !hdrOn; document.getElementById('hdrBtn').classList.toggle('active', hdrOn); applyFilters(); };
 document.getElementById('zoomBtn').onclick = () => {
   zoomLevel = zoomLevel === 1 ? 2 : 1;
   video.style.transform = `scale(${zoomLevel})`;
-  document.getElementById('zoomBtn').innerHTML = zoomLevel === 1 
+  document.getElementById('zoomBtn').innerHTML = zoomLevel === 1
     ? '<div style="font-weight:700;font-size:18px;">1×</div><div style="font-size:11px;color:#666;">WIDE</div><div style="width:6px;height:6px;background:#007AFF;border-radius:50%;margin:4px auto 0;"></div>'
     : '<div style="font-weight:700;font-size:18px;">2×</div><div style="font-size:11px;color:#666;">TELE</div><div style="width:6px;height:6px;background:#007AFF;border-radius:50%;margin:4px auto 0;"></div>';
 };
@@ -510,9 +363,9 @@ document.querySelectorAll('.mode').forEach(m => {
     document.querySelectorAll('.mode').forEach(x => x.classList.remove('active'));
     m.classList.add('active');
     currentMode = m.dataset.mode;
-    if (currentMode === 'night') video.style.filter = 'brightness(1.3) contrast(1.1)';
-    else if (currentMode === 'portrait') video.style.filter = 'blur(0px) brightness(1.05)';
-    else video.style.filter = currentFilter;
+    if (currentMode === 'pro') document.getElementById('proModal').style.display = 'flex';
+    applyFilters();
+    if (currentMode !== 'video' && isRecording) toggleRecording();
   };
 });
 
@@ -521,17 +374,30 @@ document.querySelectorAll('.filter-item').forEach(f => {
     document.querySelectorAll('.filter-item').forEach(x => x.classList.remove('active'));
     f.classList.add('active');
     currentFilter = f.dataset.filter;
-    video.style.filter = currentFilter;
+    applyFilters();
   };
 });
 
+['exposure','contrast','saturation','warmth'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.oninput = applyFilters;
+});
+
+viewfinder.onclick = (e) => {
+  if (e.target.closest('.btn-circle, .aspect, .zoom-btn, .filter-btn, .gallery-thumb')) return;
+  const rect = viewfinder.getBoundingClientRect();
+  const x = e.clientX - rect.left - 40;
+  const y = e.clientY - rect.top - 40;
+  focusRing.style.left = x + 'px';
+  focusRing.style.top = y + 'px';
+  focusRing.classList.add('show');
+  setTimeout(() => focusRing.classList.remove('show'), 600);
+};
+
 shutter.onclick = takePhoto;
 
-function closeModal(id) {
-  document.getElementById(id).style.display = 'none';
-}
-
-document.querySelectorAll('.gallery-modal, .filters-modal, .settings-modal').forEach(m => {
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+document.querySelectorAll('.gallery-modal, .filters-modal, .settings-modal, .pro-modal').forEach(m => {
   m.onclick = (e) => { if (e.target === m) m.style.display = 'none'; };
 });
 
