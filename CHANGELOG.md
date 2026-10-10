@@ -1,21 +1,19 @@
 # Changelog
 
-## v2.0 — October 9, 2026
-- Full rebuild with prioritized features from the feature list
-- Added camera switch while recording video
-- Enhanced Pro mode with more controls (Exposure, Contrast, Saturation, Warmth, Sharpness)
-- Improved quality simulation (higher JPEG quality, mode-specific filters for Night/Portrait/HDR)
-- Better permissions banner and handling
-- Cleaner premium light UI, animations, and micro-interactions
-- Video recording with MediaRecorder + download
-- Aspect ratio pill, improved zoom, Looks modal
-- Updated gallery flow
+## v3.0 — October 9, 2026
+- Complete rebuild with new ultra-vibrant neon-glass UI
+- Added every feature category: Basics, Premium, Advanced, Standout
+- Histogram, Zebra stripes, Focus peaking, Level, Composition coach overlays
+- Film Looks / LUTs, Grain control, Pro sliders (Exposure, ISO, Shutter, WB)
+- Burst mode, Night/Astro modes, Natural mode
+- Camera switch while recording
+- Voice shutter (SpeechRecognition ready)
+- Magic Eraser & RAW simulations
+- Higher quality capture pipeline
+- Improved animations and micro-interactions
 
-## v1.2 — October 9, 2026
-- Grid overlay, tap-to-focus, Pro sliders, camera flip, more filters, video simulation
+## v2.0
+- Prioritized pro features and camera switch
 
-## v1.1 — October 9, 2026
-- In-app Changelog
-
-## v1.0 — October 9, 2026
-- Initial release
+## v1.x
+- Initial versions
