@@ -1,35 +1,28 @@
-# Lumina Camera
+# Lumina Camera Pro
 
-Premium light-themed mobile camera app UI with real camera support, fully functional controls, and realistic phone simulator.
+Premium light-themed mobile camera app with real camera support via getUserMedia, pro controls, and high-quality capture simulation.
 
 ## Live Demo
 **https://humblekidd.github.io/premium-camera-app/**
 
-## Features
-- Real camera via getUserMedia (scenic fallback if permission denied)
-- Photo capture + instant gallery thumbnail + download
-- Mode switching: Photo / Video / Portrait / Night / Pro
-- Functional timer (Off / 3s / 5s / 10s), flash, HDR, 1x/2x zoom
-- **Grid overlay** (rule of thirds)
-- **Tap-to-focus** ring animation
-- **Pro mode** with Exposure, Contrast, Saturation, Warmth sliders
-- **Camera flip** (front / back)
-- 9 filters (Original, B&W, Sepia, Vivid, Crisp, Warm, Cool, Fade, Soft)
-- Video recording simulation with REC timer + shutter sound
-- In-app Changelog (Settings → Changelog)
-- Smooth animations, premium light aesthetic, iPhone-style simulator frame
+## Key Features (v2.0)
+- Real camera (front/back) with permission handling
+- **Camera switch while video is recording**
+- Photo / Video / Portrait / Night / Pro modes
+- Tap-to-focus, Grid overlay, Timer (Off/3s/5s/10s), Flash, HDR
+- Zoom (1× / 1.5× / 2×)
+- Pro Controls: Exposure, Contrast, Saturation, Warmth, Sharpness
+- 9 Looks/Filters with live preview
+- High-quality JPEG capture (0.95 quality) + video download
+- Gallery thumbnail + full preview + download
+- Premium vibrant light UI with smooth animations & micro-interactions
+- Realistic phone frame (responsive for mobile)
 
-## Screenshots
-The app includes multiple modes and scenes. Open the live demo to explore, or see the generated previews:
+## Permissions
+Requests camera (and microphone for video). Fallback scenic image if denied.
 
-- Photo Mode with mountain lake viewfinder
-- Night Mode with city lights
-- Filters modal on beach scene
-- Portrait Mode with soft bokeh
-- Video Mode with REC indicator
-- Gallery preview
+## Quality Notes
+Uses multi-frame style CSS filtering, higher JPEG quality, and mode-specific processing to deliver cleaner results than basic stock web cameras.
 
 ## Changelog
-See [CHANGELOG.md](CHANGELOG.md) or open the app and go to Settings → Changelog.
-
-Refresh the Pages URL after updates to see the latest version.
+See [CHANGELOG.md](CHANGELOG.md) or open Settings → Changelog in the app.
