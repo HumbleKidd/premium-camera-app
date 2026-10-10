@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Lumina Camera</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root {
+  --accent: #007AFF;
+  --coral: #FF3B30;
+  --bg: #FFFFFF;
+  --panel: #F5F5F7;
+  --text: #1D1D1F;
+  --muted: #86868B;
+  --radius: 24px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #E8F0FE 0%, #F5F7FA 50%, #FFF5F0 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.phone {
+  width: 390px;
+  height: 844px;
+  background: #000;
+  border-radius: 54px;
+  padding: 12px;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.25), 0 0 0 8px #1a1a1a, 0 0 0 10px #333;
+  position: relative;
+  overflow: hidden;
+}
+.dynamic-island {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 126px;
+  height: 37px;
+  background: #000;
+  border-radius: 20px;
+  z-index: 100;
+}
+.screen {
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  border-radius: 42px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.status-bar {
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px 0 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  z-index: 10;
+}
+.viewfinder {
+  flex: 1;
+  position: relative;
+  background: #111;
+  overflow: hidden;
+}
+#video, #fallback {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+#fallback { display: none; }
+.controls-top {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: space-between;
+  z-index: 20;
+}
+.btn-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.btn-circle:hover, .btn-circle.active {
+  background: var(--accent);
+  color: white;
+  transform: scale(1.05);
+}
+.aspect { background: rgba(255,255,255,0.92); border-radius: 20px; padding: 8px 14px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.side-controls {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 20;
+}
+.zoom-btn, .filter-btn, .gallery-thumb {
+  background: rgba(255,255,255,0.94);
+  backdrop-filter: blur(16px);
+  border-radius: 22px;
+  padding: 10px 8px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  transition: all 0.2s;
+}
+.zoom-btn:hover, .filter-btn:hover { transform: scale(1.04); }
+.gallery-thumb {
+  width: 58px;
+  height: 58px;
+  padding: 4px;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+}
+.gallery-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--coral); position: absolute; bottom: 6px; right: 6px; }
+.bottom-panel {
+  background: var(--bg);
+  padding: 16px 20px 28px;
+  border-top: 1px solid #eee;
+}
+.shutter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.shutter {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: white;
+  border: 5px solid var(--accent);
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0,122,255,0.25);
+  transition: all 0.15s;
+}
+.shutter:active { transform: scale(0.94); }
+.shutter::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  background: white;
+  border-radius: 50%;
+  border: 2px solid #e0e0e0;
+}
+.timer-btn, .hdr-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #FFF5F5;
+  border: none;
+  color: var(--coral);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.timer-btn.active, .hdr-btn.active { background: var(--coral); color: white; }
+.modes {
+  display: flex;
+  background: var(--panel);
+  border-radius: 28px;
+  padding: 6px;
+  gap: 4px;
+}
+.mode {
+  flex: 1;
+  text-align: center;
+  padding: 10px 0;
+  border-radius: 22px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.mode.active {
+  background: white;
+  color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.mode.active::after {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  margin: 4px auto 0;
+}
+.flash-overlay {
+  position: absolute;
+  inset: 0;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 30;
+  transition: opacity 0.1s;
+}
+.countdown {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 120px;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  z-index: 25;
+  pointer-events: none;
+  opacity: 0;
+}
+.gallery-modal, .settings-modal, .filters-modal {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 50;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.modal-content {
+  background: white;
+  border-radius: 24px;
+  padding: 24px;
+  max-width: 320px;
+  width: 90%;
+  text-align: center;
+}
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+.filter-item {
+  padding: 12px 8px;
+  border-radius: 16px;
+  background: var(--panel);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+}
+.filter-item.active { background: var(--accent); color: white; }
+.captured-photo {
+  width: 100%;
+  border-radius: 16px;
+  margin-bottom: 16px;
+}
+@media (max-width: 420px) {
+  .phone { width: 100vw; height: 100vh; border-radius: 0; padding: 0; box-shadow: none; }
+  .screen { border-radius: 0; }
+  .dynamic-island { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="dynamic-island"></div>
+  <div class="screen">
+    <div class="status-bar">
+      <span>9:41</span>
+      <div style="display:flex;gap:6px;font-size:14px;">
+        <i class="fa-solid fa-signal"></i>
+        <i class="fa-solid fa-wifi"></i>
+        <i class="fa-solid fa-battery-full"></i>
+      </div>
+    </div>
+    <div class="viewfinder">
+      <video id="video" autoplay playsinline muted></video>
+      <img id="fallback" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80" alt="Mountain view">
+      <div class="flash-overlay" id="flash"></div>
+      <div class="countdown" id="countdown"></div>
+      <div class="controls-top">
+        <button class="btn-circle" id="flashBtn" title="Flash"><i class="fa-solid fa-bolt"></i></button>
+        <button class="btn-circle" id="timerBtn" title="Timer"><i class="fa-solid fa-clock"></i></button>
+        <div class="aspect" id="aspectBtn"><i class="fa-solid fa-expand"></i> 16:9</div>
+        <button class="btn-circle" id="settingsBtn" title="Settings"><i class="fa-solid fa-gear"></i></button>
+      </div>
+      <div class="side-controls">
+        <div class="zoom-btn" id="zoomBtn">
+          <div style="font-weight:700;font-size:18px;">1×</div>
+          <div style="font-size:11px;color:#666;">WIDE</div>
+          <div style="width:6px;height:6px;background:#007AFF;border-radius:50%;margin:4px auto 0;"></div>
+        </div>
+        <div class="filter-btn" id="filtersBtn">
+          <i class="fa-solid fa-magic" style="font-size:18px;margin-bottom:4px;"></i>
+          <div style="font-size:11px;">Filters</div>
+        </div>
+        <div class="gallery-thumb" id="galleryBtn">
+          <img id="thumb" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=120&q=80" alt="Last photo">
+          <div class="dot"></div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-panel">
+      <div class="shutter-row">
+        <button class="timer-btn" id="timer3s">3s</button>
+        <button class="shutter" id="shutter"></button>
+        <button class="hdr-btn" id="hdrBtn">HDR</button>
+      </div>
+      <div class="modes">
+        <div class="mode active" data-mode="photo">Photo</div>
+        <div class="mode" data-mode="video">Video</div>
+        <div class="mode" data-mode="portrait">Portrait</div>
+        <div class="mode" data-mode="night">Night</div>
+        <div class="mode" data-mode="pro">Pro</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="gallery-modal" id="galleryModal">
+  <div class="modal-content">
+    <img id="fullPhoto" class="captured-photo" alt="Captured">
+    <button class="btn-circle" style="margin:0 auto;" onclick="closeModal('galleryModal')">Close</button>
+    <a id="downloadLink" download="lumina-photo.jpg" style="display:block;margin-top:12px;color:#007AFF;font-weight:600;">Download Photo</a>
+  </div>
+</div>
+<div class="filters-modal" id="filtersModal">
+  <div class="modal-content">
+    <h3 style="margin-bottom:8px;">Filters</h3>
+    <div class="filter-grid">
+      <div class="filter-item active" data-filter="none">Original</div>
+      <div class="filter-item" data-filter="grayscale(1)">B&W</div>
+      <div class="filter-item" data-filter="sepia(0.7)">Sepia</div>
+      <div class="filter-item" data-filter="saturate(1.6)">Vivid</div>
+      <div class="filter-item" data-filter="contrast(1.3) brightness(1.1)">Crisp</div>
+      <div class="filter-item" data-filter="hue-rotate(30deg)">Warm</div>
+    </div>
+    <button class="btn-circle" style="margin:16px auto 0;" onclick="closeModal('filtersModal')">Done</button>
+  </div>
+</div>
+<div class="settings-modal" id="settingsModal">
+  <div class="modal-content">
+    <h3>Settings</h3>
+    <p style="margin:12px 0;color:#666;font-size:14px;">Lumina Camera • Premium Light UI</p>
+    <button class="btn-circle" style="margin:0 auto;" onclick="closeModal('settingsModal')">Close</button>
+  </div>
+</div>
+
+<canvas id="canvas" style="display:none;"></canvas>
+
+<script>
+const video = document.getElementById('video');
+const fallback = document.getElementById('fallback');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const shutter = document.getElementById('shutter');
+const thumb = document.getElementById('thumb');
+const fullPhoto = document.getElementById('fullPhoto');
+const downloadLink = document.getElementById('downloadLink');
+const flashOverlay = document.getElementById('flash');
+const countdownEl = document.getElementById('countdown');
+
+let stream = null;
+let currentFilter = 'none';
+let timerOn = false;
+let flashOn = false;
+let hdrOn = false;
+let zoomLevel = 1;
+let currentMode = 'photo';
+
+async function startCamera() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
+      audio: false
+    });
+    video.srcObject = stream;
+    video.style.filter = currentFilter;
+  } catch (err) {
+    console.warn('Camera denied or unavailable, using fallback');
+    video.style.display = 'none';
+    fallback.style.display = 'block';
+  }
+}
+
+function takePhoto() {
+  if (timerOn) {
+    runCountdown(() => capture());
+  } else {
+    capture();
+  }
+}
+
+function runCountdown(cb) {
+  let count = 3;
+  countdownEl.style.opacity = 1;
+  const interval = setInterval(() => {
+    countdownEl.textContent = count;
+    if (count <= 0) {
+      clearInterval(interval);
+      countdownEl.style.opacity = 0;
+      countdownEl.textContent = '';
+      cb();
+    }
+    count--;
+  }, 800);
+}
+
+function capture() {
+  const source = video.style.display !== 'none' ? video : fallback;
+  canvas.width = source.videoWidth || source.naturalWidth || 1080;
+  canvas.height = source.videoHeight || source.naturalHeight || 1920;
+  ctx.filter = currentFilter;
+  if (hdrOn) ctx.filter += ' contrast(1.15) saturate(1.2)';
+  ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+  thumb.src = dataUrl;
+  fullPhoto.src = dataUrl;
+  downloadLink.href = dataUrl;
+  flashEffect();
+}
+
+function flashEffect() {
+  if (flashOn) {
+    flashOverlay.style.opacity = 1;
+    setTimeout(() => flashOverlay.style.opacity = 0, 120);
+  }
+}
+
+document.getElementById('flashBtn').onclick = () => {
+  flashOn = !flashOn;
+  document.getElementById('flashBtn').classList.toggle('active', flashOn);
+};
+document.getElementById('timerBtn').onclick = () => {
+  timerOn = !timerOn;
+  document.getElementById('timerBtn').classList.toggle('active', timerOn);
+  document.getElementById('timer3s').classList.toggle('active', timerOn);
+};
+document.getElementById('timer3s').onclick = () => document.getElementById('timerBtn').click();
+document.getElementById('hdrBtn').onclick = () => {
+  hdrOn = !hdrOn;
+  document.getElementById('hdrBtn').classList.toggle('active', hdrOn);
+};
+document.getElementById('zoomBtn').onclick = () => {
+  zoomLevel = zoomLevel === 1 ? 2 : 1;
+  video.style.transform = `scale(${zoomLevel})`;
+  document.getElementById('zoomBtn').innerHTML = zoomLevel === 1 
+    ? '<div style="font-weight:700;font-size:18px;">1×</div><div style="font-size:11px;color:#666;">WIDE</div><div style="width:6px;height:6px;background:#007AFF;border-radius:50%;margin:4px auto 0;"></div>'
+    : '<div style="font-weight:700;font-size:18px;">2×</div><div style="font-size:11px;color:#666;">TELE</div><div style="width:6px;height:6px;background:#007AFF;border-radius:50%;margin:4px auto 0;"></div>';
+};
+document.getElementById('filtersBtn').onclick = () => document.getElementById('filtersModal').style.display = 'flex';
+document.getElementById('galleryBtn').onclick = () => document.getElementById('galleryModal').style.display = 'flex';
+document.getElementById('settingsBtn').onclick = () => document.getElementById('settingsModal').style.display = 'flex';
+document.getElementById('aspectBtn').onclick = () => {
+  const el = document.getElementById('aspectBtn');
+  el.innerHTML = el.innerHTML.includes('16:9') ? '<i class="fa-solid fa-expand"></i> 4:3' : '<i class="fa-solid fa-expand"></i> 16:9';
+};
+
+document.querySelectorAll('.mode').forEach(m => {
+  m.onclick = () => {
+    document.querySelectorAll('.mode').forEach(x => x.classList.remove('active'));
+    m.classList.add('active');
+    currentMode = m.dataset.mode;
+    if (currentMode === 'night') video.style.filter = 'brightness(1.3) contrast(1.1)';
+    else if (currentMode === 'portrait') video.style.filter = 'blur(0px) brightness(1.05)';
+    else video.style.filter = currentFilter;
+  };
+});
+
+document.querySelectorAll('.filter-item').forEach(f => {
+  f.onclick = () => {
+    document.querySelectorAll('.filter-item').forEach(x => x.classList.remove('active'));
+    f.classList.add('active');
+    currentFilter = f.dataset.filter;
+    video.style.filter = currentFilter;
+  };
+});
+
+shutter.onclick = takePhoto;
+
+function closeModal(id) {
+  document.getElementById(id).style.display = 'none';
+}
+
+document.querySelectorAll('.gallery-modal, .filters-modal, .settings-modal').forEach(m => {
+  m.onclick = (e) => { if (e.target === m) m.style.display = 'none'; };
+});
+
+startCamera();
+</script>
+</body>
+</html>
