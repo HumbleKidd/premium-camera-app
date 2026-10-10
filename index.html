@@ -371,7 +371,27 @@ body {
   <div class="modal-content">
     <h3>Settings</h3>
     <p style="margin:12px 0;color:#666;font-size:14px;">Lumina Camera • Premium Light UI</p>
+    <button class="btn-circle" style="margin:8px auto;display:block;" onclick="document.getElementById('changelogModal').style.display='flex';closeModal('settingsModal')">View Changelog</button>
+    <a href="screenshots.html" target="_blank" style="display:block;margin:8px 0;color:#007AFF;font-weight:600;">View Screenshots</a>
     <button class="btn-circle" style="margin:0 auto;" onclick="closeModal('settingsModal')">Close</button>
+  </div>
+</div>
+<div class="gallery-modal" id="changelogModal">
+  <div class="modal-content" style="text-align:left;max-height:70vh;overflow:auto;">
+    <h3 style="text-align:center;">Changelog</h3>
+    <div style="margin-top:16px;font-size:13px;line-height:1.5;">
+      <strong>v1.1 — Oct 9, 2026</strong><br>
+      • Added in-app Changelog<br>
+      • Added Screenshots gallery page<br>
+      • Improved settings modal<br><br>
+      <strong>v1.0 — Oct 9, 2026</strong><br>
+      • Initial release<br>
+      • Real camera + fallback<br>
+      • Full controls: modes, timer, flash, HDR, zoom, filters<br>
+      • Phone simulator frame<br>
+      • Photo capture & download
+    </div>
+    <button class="btn-circle" style="margin:16px auto 0;display:block;" onclick="closeModal('changelogModal')">Close</button>
   </div>
 </div>
 
